@@ -4,8 +4,10 @@ using System.Text;
 
 namespace Capstone.Classes
 {
+    /// <summary>
+    /// This class should contain any and all details of access to files
+    /// </summary>
     public class FileAccess
     {
-        // This class should contain any and all details of access to files
     }
 }

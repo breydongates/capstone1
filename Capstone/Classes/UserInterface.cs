@@ -4,13 +4,14 @@ using System.Text;
 
 namespace Capstone.Classes
 {
+    /// <summary>
+    /// This class provides all user communications, but not much else.
+    /// All the "work" of the application should be done elsewhere
+    /// ALL instances of Console.ReadLine and Console.WriteLine should 
+    /// be in this class.
+    /// </summary>
     public class UserInterface
     {
-        // This class provides all user communications, but not much else.
-        // All the "work" of the application should be done elsewhere
-        // ALL instances of Console.ReadLine and Console.WriteLine should 
-        // be in this class.
-
         private Catering catering = new Catering();
 
         public void RunInterface()
