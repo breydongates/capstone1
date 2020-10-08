@@ -54,7 +54,7 @@ namespace Capstone.Classes
             Console.WriteLine("Our current items: ");
             foreach (CateringItem item in this.catering.DisplayCateringItems)
             {
-                Console.WriteLine($"{item.Id} {item.Name} {item.Price} {item.Category} {item.Inventory}");
+                Console.WriteLine($"{item.Id} {item.Name} {item.Price} {item.Category} {item.Quantity}");
                 Console.WriteLine();
             }
         }
@@ -71,7 +71,7 @@ namespace Capstone.Classes
                 switch (orderItemsChoice)
                 {
                     case "1":
-                        Console.WriteLine("Your current balance is: " + this.catering.Balance);
+                        Console.WriteLine("Your current balance is: " + this.catering.Balance.ToString("C"));
                         Console.WriteLine("How much would you like to add (balance can not exceed $5000)?: ");
                         string input = Console.ReadLine();
                         decimal moneyToAdd = decimal.Parse(input);
@@ -81,12 +81,14 @@ namespace Capstone.Classes
                             break;
                         }
                         this.catering.AddMoney(moneyToAdd);
+                        Console.WriteLine("Your balance is: " + this.catering.Balance.ToString("C"));
+                        files.TransactionLog(moneyToAdd, this.catering.Balance);
                         break;
                     case "2":
                         DisplayCateringItems();
                         Console.WriteLine("Please enter the product code to purchase: ");
                         string inputProductCode = Console.ReadLine();
-                        if (catering.DisplayCateringItems.ToString().Contains(inputProductCode))
+                        if (catering.ItemExists(inputProductCode))
                         {
                             Console.WriteLine("Please enter the amount to purchase: ");
                             int amount = int.Parse(Console.ReadLine());
@@ -96,9 +98,44 @@ namespace Capstone.Classes
                         {
                             Console.WriteLine("This product code was not found. Please choose one that exists.");
                         }
+                        
                         break;
                     case "3":
+                        decimal total = 0;
+                        foreach(CateringItem item in catering.purchasedItems)
+                        {
+                           
+                            if (item.Category == "B")
+                            {
+                               item.Category = "Beverage";
+                            }
+                            if (item.Category == "E")
+                            {
+                                item.Category = "Entree";
+                            }
+                            if (item.Category == "D")
+                            {
+                                item.Category = "Dessert";
+                            }
+                            if (item.Category == "A")
+                            {
+                                item.Category = "Appetizer";
+                            }
+
+                            Console.WriteLine($"{item.Quantity} {item.Category} {item.Name} {item.Price.ToString("C")} {(item.Quantity * item.Price).ToString("C")} ");
+                            total += item.Quantity * item.Price;
+                            Console.WriteLine();
+                            files.PurchaseLog(item.Quantity, item.Name, item.Id, item.Price, catering.Balance - (item.Quantity * item.Price));
+
+                        }
+                        Console.WriteLine("Your total is: " + total.ToString("C"));
+                        decimal change = catering.Balance - total;
+                        Console.WriteLine("Your change is: ");
+                        Console.WriteLine($"${change}");
+                        Console.WriteLine(catering.Change(change));
+                        files.ChangeLog(change, catering.Balance);
                         exitMenu = true;
+
                         break;
                     default:
                         Console.WriteLine("Please select a number between 1 and 3.");

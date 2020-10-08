@@ -11,6 +11,7 @@ namespace Capstone.Classes
     public class FileAccess
     {
         private string filePath = @"C:\Catering\cateringSystem.csv";
+        private string logPath = @"C:\Catering\log.txt";
 
         public void LoadCateringItems(Catering catering)
         {
@@ -28,6 +29,38 @@ namespace Capstone.Classes
                     CateringItem Item = new CateringItem(type[1], type[3], type[0], price);
                     catering.Add(Item);
                 }
+            }
+        }
+        public void TransactionLog(decimal amountAdded, decimal balance)
+        {
+            DateTime currentTime = DateTime.Now;
+            using (StreamWriter writer = new StreamWriter(logPath, true))
+            {
+                writer.WriteLine();
+                writer.Write(currentTime.ToString());
+                writer.Write(" ADD MONEY: ");
+                writer.Write($" {amountAdded.ToString("C")} {balance.ToString("C")}");
+            }
+        }
+        public void PurchaseLog(int amountPurchased, string name, string id, decimal price, decimal balance)
+        {
+            DateTime currentTime = DateTime.Now;
+            using (StreamWriter writer = new StreamWriter(logPath, true))
+            {
+                writer.WriteLine();
+                writer.Write(currentTime.ToString());
+                writer.Write($" {amountPurchased} {name} {id}  {(price * amountPurchased).ToString("C")} {balance.ToString("C")}");
+            }
+        }
+        public void ChangeLog(decimal changeGiven, decimal balance)
+        {
+            DateTime currentTime = DateTime.Now;
+            using (StreamWriter writer = new StreamWriter(logPath, true))
+            {
+                writer.WriteLine();
+                writer.Write(currentTime.ToString());
+                writer.Write(" GIVE CHANGE: ");
+                writer.Write($" {changeGiven.ToString("C")} {balance.ToString("C")}");
             }
         }
     }

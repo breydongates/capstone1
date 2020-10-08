@@ -21,7 +21,7 @@ namespace Capstone.Classes
         public string Id { get; set; }
         public decimal Price { get; set; }
 
-        public int Inventory { get; set; } = 50;
+        public int Quantity { get; set; } = 50;
 
     }
 }
