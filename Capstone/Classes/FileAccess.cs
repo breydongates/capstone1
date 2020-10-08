@@ -12,7 +12,7 @@ namespace Capstone.Classes
     {
         private string filePath = @"C:\Catering\cateringSystem.csv";
 
-        public void LoadCateringItems()
+        public void LoadCateringItems(Catering catering)
         {
             using (StreamReader reader = new StreamReader(filePath))
             {
@@ -20,10 +20,13 @@ namespace Capstone.Classes
                 {
                     string line = reader.ReadLine();
                     string[] type = line.Split("|");
-                    string[] itemName = type[1].Split("|"); // type [0] is the type, item name [0] is the actual item name
-                    string[] priceSplitter = itemName[1].Split("|");
-                    int price = int.Parse(itemName[0]);
-                    
+                    //string[] itemName = type[1].Split("|"); // type [0] is the type, item name [0] is the actual item name
+                    //string[] priceSplitter = itemName[1].Split("|");
+                    string priceString = type[2];
+                    decimal price = decimal.Parse(priceString);
+
+                    CateringItem Item = new CateringItem(type[1], type[3], type[0], price);
+                    catering.Add(Item);
                 }
             }
         }

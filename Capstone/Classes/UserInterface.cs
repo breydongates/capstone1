@@ -18,12 +18,12 @@ namespace Capstone.Classes
 
         public void RunInterface()
         {
+            files.LoadCateringItems(this.catering);
 
             bool done = false;
             while (!done)
             {
                 Console.WriteLine("This is the UserInterface");
-                Console.ReadLine();
                 Console.WriteLine("(1) Display Catering Items");
                 Console.WriteLine();
                 Console.WriteLine("(2) Order");
@@ -51,7 +51,12 @@ namespace Capstone.Classes
         }
         public void DisplayCateringItems()
         {
-
+            Console.WriteLine("Our current items: ");
+            foreach (CateringItem item in this.catering.DisplayCateringItems)
+            {
+                Console.WriteLine($"{item.Id} {item.Name} {item.Price} {item.Category} {item.Inventory}");
+                Console.WriteLine();
+            }
         }
         public void OrderItems()
         {
@@ -66,10 +71,31 @@ namespace Capstone.Classes
                 switch (orderItemsChoice)
                 {
                     case "1":
-                        this.AddMoney();
+                        Console.WriteLine("Your current balance is: " + this.catering.Balance);
+                        Console.WriteLine("How much would you like to add (balance can not exceed $5000)?: ");
+                        string input = Console.ReadLine();
+                        decimal moneyToAdd = decimal.Parse(input);
+                        if (this.catering.Balance >= 5000 || (this.catering.Balance + moneyToAdd) > 5000 )
+                        {
+                            Console.WriteLine("Balance cannot exceed $5000");
+                            break;
+                        }
+                        this.catering.AddMoney(moneyToAdd);
                         break;
                     case "2":
-                        this.SelectProduct();
+                        DisplayCateringItems();
+                        Console.WriteLine("Please enter the product code to purchase: ");
+                        string inputProductCode = Console.ReadLine();
+                        if (catering.DisplayCateringItems.ToString().Contains(inputProductCode))
+                        {
+                            Console.WriteLine("Please enter the amount to purchase: ");
+                            int amount = int.Parse(Console.ReadLine());
+                            Console.WriteLine(this.catering.SelectProduct(inputProductCode, amount));
+                        }
+                        else
+                        {
+                            Console.WriteLine("This product code was not found. Please choose one that exists.");
+                        }
                         break;
                     case "3":
                         exitMenu = true;
