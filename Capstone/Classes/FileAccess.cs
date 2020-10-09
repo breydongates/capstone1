@@ -10,28 +10,26 @@ namespace Capstone.Classes
     /// </summary>
     public class FileAccess
     {
-        private string filePath = @"C:\Catering\cateringSystem.csv";
-        private string logPath = @"C:\Catering\log.txt";
+        private string filePath = @"C:\Catering\cateringSystem.csv"; // File path for csv values to load into catering item
+        private string logPath = @"C:\Catering\log.txt"; // File path for log file
 
-        public void LoadCateringItems(Catering catering)
+        public void LoadCateringItems(Catering catering) // Reads from csv file into cateringitems list
         {
             using (StreamReader reader = new StreamReader(filePath))
             {
                 while(!reader.EndOfStream)
                 {
                     string line = reader.ReadLine();
-                    string[] type = line.Split("|");
-                    //string[] itemName = type[1].Split("|"); // type [0] is the type, item name [0] is the actual item name
-                    //string[] priceSplitter = itemName[1].Split("|");
+                    string[] type = line.Split("|");        // Splits each line from csv into an array on "|"
                     string priceString = type[2];
                     decimal price = decimal.Parse(priceString);
 
-                    CateringItem Item = new CateringItem(type[1], type[3], type[0], price);
+                    CateringItem Item = new CateringItem(type[1], type[3], type[0], price); // Uses array indexes to grab specific values
                     catering.Add(Item);
                 }
             }
         }
-        public void TransactionLog(decimal amountAdded, decimal balance)
+        public void TransactionLog(decimal amountAdded, decimal balance) // Writes out to log file when money is addded
         {
             DateTime currentTime = DateTime.Now;
             using (StreamWriter writer = new StreamWriter(logPath, true))
@@ -42,7 +40,7 @@ namespace Capstone.Classes
                 writer.Write($" {amountAdded.ToString("C")} {balance.ToString("C")}");
             }
         }
-        public void PurchaseLog(int amountPurchased, string name, string id, decimal price, decimal balance)
+        public void PurchaseLog(int amountPurchased, string name, string id, decimal price, decimal balance) // Writes out to log file when items are purchased
         {
             DateTime currentTime = DateTime.Now;
             using (StreamWriter writer = new StreamWriter(logPath, true))
@@ -52,7 +50,7 @@ namespace Capstone.Classes
                 writer.Write($" {amountPurchased} {name} {id}  {(price * amountPurchased).ToString("C")} {balance.ToString("C")}");
             }
         }
-        public void ChangeLog(decimal changeGiven, decimal balance)
+        public void ChangeLog(decimal changeGiven, decimal balance) // Writes out to log file when change is given
         {
             DateTime currentTime = DateTime.Now;
             using (StreamWriter writer = new StreamWriter(logPath, true))

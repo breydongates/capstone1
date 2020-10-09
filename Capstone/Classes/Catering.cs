@@ -11,14 +11,12 @@ namespace Capstone.Classes
     {
         private List<CateringItem> items = new List<CateringItem>();
 
-        private string filePath = @"C:\Catering\cateringLogfile.csv"; // You will likely need to create this folder on your machine
-
-        public void Add(CateringItem item)
+        public void Add(CateringItem item) // Adding the catering item list from file access
         {
             items.Add(item);
         }
 
-        public List<CateringItem> DisplayCateringItems
+        public List<CateringItem> DisplayCateringItems // Display catering items 
         {
             get
             {
@@ -26,15 +24,28 @@ namespace Capstone.Classes
             }
         }
 
-        public decimal Balance { get; set; } = 0.0M;
+        public decimal Balance { get; set; } = 0.0M; // Money entered, defaults to zero
 
-        public void AddMoney(decimal moneyToAdd)
+        public string AddMoney(decimal moneyToAdd) // Add money method
         {
-            Balance += moneyToAdd;
-
+            if (this.Balance >= 5000 || (this.Balance + moneyToAdd) > 5000)
+            {
+                return "Balance cannot exceed $5000";
+                
+            }
+            if (moneyToAdd < 0)
+            {
+                return "Can not add negative balance amount, please enter a positive amount";
+            }
+            else
+            {
+                this.Balance += moneyToAdd;
+                return "Your balance is: " + this.Balance.ToString("C");
+            }
+            
         }
 
-        public string SelectProduct(string productCode, int amount)
+        public string SelectProduct(string productCode, int amount) // Takes in product code from user input, checks it against codes in catering item list, changes the category, adds them to purchased items list
         {
             foreach (CateringItem item in items)
             {
@@ -50,18 +61,69 @@ namespace Capstone.Classes
 
                 if (item.Id == productCode && item.Quantity > 0)
                 {
+                    item.Category = CategoryConvert(item.Category);
+                    
                     item.Quantity -= amount;
-                    CateringItem purchasedItem = new CateringItem(item.Name, item.Category, item.Id, item.Price);
+                    CateringItem purchasedItem = new CateringItem(item.Name, item.Category, item.Id, item.Price); // Creates new object of catering item to pass into purchaseditems list
                     purchasedItem.Quantity = amount;
-                    purchasedItems.Add(purchasedItem);
-                    return "Item purchased.";
+
+                    purchasedItems.Add(purchasedItem); // Adds item to purchased items list
+                    decimal priceTimesAmount = purchasedItem.Quantity * purchasedItem.Price;
+                    if (PurchasesOverFiveThousandCheck(priceTimesAmount)) // Calls purchased over 5k to check if shopping cart has exceed max balance
+                    {
+                        return "Item added to cart. Complete transaction to purchase.";
+                    }
+                    else
+                    {
+                        purchasedItems.Remove(purchasedItem);
+                        return "Items to purchase exceeds $5000 maximum balance. Item not purchased.";
+                    }
+
                 }
                 
             }
             return "";
         }
 
-        public bool ItemExists(string productCode)
+        public bool PurchasesOverFiveThousandCheck(decimal priceTimesAmount) // iterates thru items in purchased item list, adds totals of price*quantity, checks against max balance
+        {
+            decimal total = 0;
+            foreach (CateringItem item in purchasedItems)
+            {
+                total += item.Price * item.Quantity;
+            }
+            if (total > 5000)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public string CategoryConvert(string itemCategory) // takes in category id letter, converts it to full category name
+        {
+            if (itemCategory == "B")
+            {
+                return "Beverage";
+            }
+            if (itemCategory == "E")
+            {
+                return "Entree";
+            }
+            if (itemCategory == "D")
+            {
+                return "Dessert";
+            }
+            if (itemCategory == "A")
+            {
+                return "Appetizer";
+            }
+            return "";
+        }
+
+        public bool ItemExists(string productCode) // Checks to see if item exists according to product code
         {
             foreach (CateringItem item in items)
             {
@@ -74,14 +136,21 @@ namespace Capstone.Classes
             return false;
         }
 
-        public List<CateringItem> purchasedItems = new List<CateringItem>();
+        public List<CateringItem> purchasedItems = new List<CateringItem>(); // List of purchased items that we are adding to with select product method
 
-        public decimal CompleteTransaction()
+        public bool CheckBalanceIsEnough(decimal total) // Checks total to see if it exceeds available balance
         {
-            return 0;
+            if (total <= this.Balance)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public string Change(decimal change)
+        public string Change(decimal change) // Makes change by counting instances of each denomination untill reaching zero
         {   int twenties = 0;
             int tens = 0;
             int fives = 0;
